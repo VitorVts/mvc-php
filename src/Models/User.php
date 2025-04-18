@@ -69,15 +69,23 @@ class User extends DBconnection
             ':email' => $email
             ]
         );
-        self::log("User updated: {$nome}");
+        if ($this->getUser($id) === null) {
+            self::log("Usuário não encontrado.");
+            return;
+        }
+
     }
 
     public function deleteUser(int $id): void
     {
+        if ($this->getUser($id) === null) {
+            json_encode(['error' => 'Usuário não encontrado.']);
+            return;
+        }
         $pdo = self::$instance->prepare('DELETE FROM usuarios WHERE id = :id');
+        
         $pdo->bindParam(':id', $id);
         $pdo->execute();
-        self::log("User deleted: {$id}");
     }
 
     public function getNome(): string

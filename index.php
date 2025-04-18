@@ -54,7 +54,12 @@ function handleRequest($uri)
         $controller->show($matches[1]);
     } elseif ($uri === '/create') {
         $controller->create();
-    } else {
+    } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        $controller->update();
+    } else if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+        $controller->delete();
+    }
+    else {
         http_response_code(404);
         echo "Rota não encontrada.";
     }

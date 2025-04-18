@@ -69,5 +69,45 @@ class UserController
         ]);
     }
 
+    public function update(): void
+    {
+      $data = json_decode(file_get_contents('php://input'), true);
+      if (!$data || !isset($data['id']) || !isset($data['nome']) || !isset($data['email'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Dados inválidos.']);
+            return;
+      }
 
+        $user = new User();
+        $user->updateUser($data['id'], $data['nome'], $data['email']);
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Usuario atualizado com sucesso.',
+            'user' => [
+                'id' => $data['id'],
+                'nome' => $data['nome'],
+                'email' => $data['email']
+            ]
+        ], JSON_PRETTY_PRINT);
+    }
+
+    public function delete(): void
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $user = new User();
+        if ($user->getUser($data['id']) === null) {
+            http_response_code(404);
+            json_encode(['error' => 'Usuário não encontrado.'], JSON_PRETTY_PRINT);
+            return;
+        }
+        $user->deleteUser($data['id']);
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Usuário deletado com sucesso.',
+            'user' => [
+                'id' => $data['id']
+            ]
+        ], JSON_PRETTY_PRINT);
+    }
 }
